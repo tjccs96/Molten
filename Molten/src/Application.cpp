@@ -27,7 +27,7 @@ int main(void)
 	float vertices[6] = {
 		-0.5f, -0.5f,
 		 0.0f,  0.0f,
-		 0.5f,  0.5f
+		 0.5f,  -0.5f
 	};
 
 	// Create buffer, bind the buffer and get data into it.
@@ -47,6 +47,9 @@ int main(void)
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
