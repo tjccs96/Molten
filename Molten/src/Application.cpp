@@ -2,6 +2,50 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+
+static unsigned int CompileShader(unsigned int type, const std::string& source)
+{
+	unsigned int id = glCreateShader(GL_VERTEX_SHADER);
+	const char* src = source.c_str();
+	glShaderSource(id, 1, &src, nullptr);
+	glCompileShader(id);
+
+	int result;
+	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+	// Error Handling
+	if (result == GL_FALSE)
+	{
+		int length;
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+		char* message = (char*)alloca(length * sizeof(char)); //Carefull with this
+		glGetShaderInfoLog(id, length, &length, message);
+		std::cout << "Failed to compile"<< 
+			(type == GL_VERTEX_SHADER ? "vertex" : "fragment") << "shader!";
+		std::cout << message;
+		glDeleteShader(id);
+		return 0;
+	}
+	
+	return id;
+}
+
+static unsigned int createShader(const std::string& vertexShader, const std::string fragmentShader)
+{
+	unsigned int program = glCreateProgram();
+	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
+	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+	glAttachShader(program, vs);
+	glAttachShader(program, fs);
+	glLinkProgram(program);
+	glValidateProgram(program);
+
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+
+	return program;
+}
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -39,7 +83,7 @@ int main(void)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 
 
 	/* Loop until the user closes the window */
