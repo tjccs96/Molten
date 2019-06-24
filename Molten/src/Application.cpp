@@ -118,16 +118,23 @@ int main(void)
 	if (!glfwInit())
 		return -1;
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(640, 480, "OpenGL Renderer", NULL, NULL);
 	if (!window)
-	{
+	{ 
 		glfwTerminate();
 		return -1;
 	}
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+
+	glfwSwapInterval(1); // Syncronize to monitor refresh rate
+
 	if (glewInit() != GLEW_OK)
 		std::cout << glewGetErrorString(glewInit());
 	
@@ -145,12 +152,17 @@ int main(void)
 	};
 
 	// Create buffer, bind the buffer and get data into it.
+	unsigned int vao;
+	glCall(glGenVertexArrays(1, &vao));
+	glCall(glBindVertexArray(vao));
+
+
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), vertices, GL_STATIC_DRAW); // or 4 * 2
+	glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), vertices, GL_STATIC_DRAW); // or 4 * 2
 
-	glEnableVertexAttribArray(0);
+	glCall(glEnableVertexAttribArray(0));
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
 	unsigned int indexBufferObject;
@@ -164,14 +176,40 @@ int main(void)
 	unsigned int shader = createShader(source.VertexSource, source.FragmentSource);
 	glUseProgram(shader);
 
+	glCall(int location = glGetUniformLocation(shader, "u_Color"));
+	ASSERT(location != -1);
+	glCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
+
+	glCall(glBindVertexArray(0));
+
+	glUseProgram(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	float r = 0.0f;
+	float increment = 0.05f;
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glUseProgram(shader);
+		glCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+		
+		glCall(glBindVertexArray(vao));
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
 		glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
  		
+		if (r > 1.0f)
+			increment = -0.05f;
+		else if (r < 0.0f)
+			increment = 0.05f;
+		
+		r += increment;
+
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
