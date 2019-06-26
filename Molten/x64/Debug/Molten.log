@@ -1,2 +1,6 @@
 ﻿  Application.cpp
+  IndexBuffer.cpp
+  Renderer.cpp
+  VertexBuffer.cpp
+  Generating Code...
   Molten.vcxproj -> C:\dev\Molten\x64\Debug\Molten.exe
