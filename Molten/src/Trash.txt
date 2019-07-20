@@ -1,0 +1,103 @@
+
+		// Create buffer, bind the buffer and get data into it.
+		unsigned int vao;
+		glCall(glGenVertexArrays(1, &vao));
+		glCall(glBindVertexArray(vao));
+
+		VertexArray va;
+		VertexBuffer vb(vertices, 4 * 4 * sizeof(float));
+		VertexBufferLayout layout;
+		layout.push<float>(2);
+		layout.push<float>(2);
+		va.addBuffer(vb, layout);
+
+		IndexBuffer ib(indices, 6);
+
+		// Projection matrix
+		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+		// View matrix
+		glm::mat4 view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
+		Shader shader("res/shaders/Basic.shader");
+		shader.bind();
+		shader.setUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+
+		Texture texture("res/textures/cpp.png");
+		texture.bind();
+		shader.setUniform1i("u_Texture", 0);
+
+		va.unbind();
+		vb.unbind();
+		ib.unbind();
+		shader.unbind();
+
+
+
+glm::vec3 translationA(200.0f, 200.0f, 0);
+		glm::vec3 translationB(400.0f, 200.0f, 0);
+
+		float r = 0.0f;
+		float increment = 0.05f;
+
+
+/*
+		bool show_demo_window = true;
+		bool show_another_window = false;
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		*/
+
+while (!glfwWindowShouldClose(window))
+		{
+			/* Render here */
+			renderer.clear();
+
+			// Start Frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+
+			{
+				glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translationA);
+				glm::mat4 model_view_projection = proj * view_matrix * model_matrix;
+				shader.bind();
+				shader.setUniformMat4f("u_MVP", model_view_projection);
+				renderer.draw(va, ib, shader);
+			}
+
+			{
+				glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), translationB);
+				glm::mat4 model_view_projection = proj * view_matrix * model_matrix;
+				shader.bind();
+				shader.setUniformMat4f("u_MVP", model_view_projection);
+				renderer.draw(va, ib, shader);
+			}
+
+			if (r > 1.0f)
+				increment = -0.05f;
+			else if (r < 0.0f)
+				increment = 0.05f;
+			r += increment;
+
+			{	// From ImGui main.cpp demo
+				
+				ImGui::Begin("Menu");                          // Create a window called "Hello, world!" and append into it.
+
+				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
+
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				
+				ImGui::End(); // End the window
+			}
+
+			// Rendering
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			/* Swap front and back buffers */
+			glfwSwapBuffers(window);
+
+			/* Poll for and process events */
+			glfwPollEvents();
+		}

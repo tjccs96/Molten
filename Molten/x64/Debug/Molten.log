@@ -1,2 +1,14 @@
 ﻿  Application.cpp
+  TestTexture2D.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\memory(2042,56): warning C4244:  'argument': conversion from '_Ty' to 'unsigned int', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\memory(2042,56): warning C4244:         with
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\memory(2042,56): warning C4244:         [
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\memory(2042,56): warning C4244:             _Ty=unsigned __int64
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.21.27702\include\memory(2042,56): warning C4244:         ]
+  Generating Code...
+C:\dev\Molten\Molten\src\tests\TestTexture2D.cpp(31): message :  see reference to function template instantiation 'std::unique_ptr<VertexBuffer,std::default_delete<_Ty>> std::make_unique<VertexBuffer,float(&)[16],unsigned __int64,0>(float (&)[16],unsigned __int64 &&)' being compiled
+C:\dev\Molten\Molten\src\tests\TestTexture2D.cpp(31): message :         with
+C:\dev\Molten\Molten\src\tests\TestTexture2D.cpp(31): message :         [
+C:\dev\Molten\Molten\src\tests\TestTexture2D.cpp(31): message :             _Ty=VertexBuffer
+C:\dev\Molten\Molten\src\tests\TestTexture2D.cpp(31): message :         ]
   Molten.vcxproj -> C:\dev\Molten\x64\Debug\Molten.exe

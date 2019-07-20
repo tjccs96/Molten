@@ -1,0 +1,5 @@
+
+Shaders tell the GPU how and why are we going to process the data
+Vertex Array is the actual data: 
+		Vertex Buffer(includes the vertex data, including position of each vertice, texture coordenates, vertex colors, normals) and 
+		Index Buffer( contains the indices into the vertex buffer so we know what to render, so we can choose which vertices we want to render) 

@@ -4,12 +4,23 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
+#include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"
 
 int main(void)
 {
@@ -24,7 +35,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "OpenGL Renderer", NULL, NULL);
+	window = glfwCreateWindow(960, 540, "OpenGL Renderer", NULL, NULL);
 	if (!window)
 	{ 
 		glfwTerminate();
@@ -38,65 +49,55 @@ int main(void)
 
 	if (glewInit() != GLEW_OK)
 		std::cout << glewGetErrorString(glewInit());
-	
 	{
-		// Define positions for the triangle to be drawn.
-		float vertices[] = {
-			-0.5f, -0.5f,
-			 0.5f, -0.5f,
-			 0.5f,  0.5f,
-			-0.5f,  0.5f
-		};
-
-		unsigned int indices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
-		// Create buffer, bind the buffer and get data into it.
-		unsigned int vao;
-		glCall(glGenVertexArrays(1, &vao));
-		glCall(glBindVertexArray(vao));
-
-		VertexArray va;
-		VertexBuffer vb(vertices, 4 * 2 * sizeof(float));
-		VertexBufferLayout layout;
-		layout.push<float>(2);
-		va.addBuffer(vb, layout);
 		
-		IndexBuffer ib(indices, 6);
-
-		Shader shader("res/shaders/Basic.shader");
-		shader.bind();
-		shader.setUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-
-		va.unbind();
-		vb.unbind();
-		ib.unbind();
-		shader.unbind();
+		glCall(glEnable(GL_BLEND));
+		glCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		Renderer renderer;
+
+		// ImGui stuff
+		const char* glsl_version = "#version 130";
+		ImGui::CreateContext();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init(glsl_version);
+		ImGui::StyleColorsDark();
+
+		test::Test* currentTest = nullptr;
+		test::TestMenu* testMenu = new test::TestMenu(currentTest);
+		currentTest = testMenu;
 		
-		float r = 0.0f;
-		float increment = 0.05f;
+		testMenu->registerTest<test::TestClearColor>("Clear Color");
+		testMenu->registerTest<test::TestTexture2D>("2D Texture");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			/* Render here */
 			renderer.clear();
-
-			shader.bind();
-			shader.setUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-			renderer.draw(va, ib, shader);
-
-			//glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-
-			if (r > 1.0f)
-				increment = -0.05f;
-			else if (r < 0.0f)
-				increment = 0.05f;
-			r += increment;
+	
+			// Start Frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			if (currentTest)
+			{
+				currentTest->onUpdate(0.0f);
+				currentTest->onRender();
+				ImGui::Begin("Test");
+				if (currentTest != testMenu && ImGui::Button("<-"))
+				{
+					delete currentTest;
+					currentTest = testMenu;
+				}
+				currentTest->onImGuiRender();
+				ImGui::End();
+			}
+			
+			// Rendering
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
@@ -104,7 +105,14 @@ int main(void)
 			/* Poll for and process events */
 			glfwPollEvents();
 		}
+		delete currentTest;
+		if (currentTest != testMenu)
+			delete testMenu;
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
 }
