@@ -6,12 +6,12 @@
 class VertexArray
 {
 private:
-	unsigned int m_RendererID;
+	unsigned int m_renderer_id_;
 public:
 	VertexArray();
 	~VertexArray();
 
-	void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
+	void add_buffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
 	void bind() const;
 	void unbind() const;
 };

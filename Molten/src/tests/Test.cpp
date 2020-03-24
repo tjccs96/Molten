@@ -3,17 +3,17 @@
 
 namespace test {
 
-	TestMenu::TestMenu(Test*& currentTestPointer)
-		: m_CurrentTest(currentTestPointer)
+	TestMenu::TestMenu(Test*& current_test_pointer)
+		: m_current_test_(current_test_pointer)
 	{
 	}
 
-	void TestMenu::onImGuiRender()
+	void TestMenu::on_imgui_render()
 	{
-		for (auto& test : m_Tests)
+		for (auto& test : m_tests_)
 		{
 			if (ImGui::Button(test.first.c_str()))
-				m_CurrentTest = test.second();
+				m_current_test_ = test.second();
 		}
 	}
 

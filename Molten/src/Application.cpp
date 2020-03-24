@@ -24,8 +24,6 @@
 
 int main(void)
 {
-	GLFWwindow* window;
-
 	/* Initialize the library: GLFW */
 	if (!glfwInit())
 		return -1;
@@ -35,7 +33,8 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(960, 540, "OpenGL Renderer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(960, 540, "OpenGL Renderer", nullptr, nullptr);
+
 	if (!window)
 	{ 
 		glfwTerminate();
@@ -45,7 +44,7 @@ int main(void)
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
-	glfwSwapInterval(1); // Syncronize to monitor refresh rate
+	glfwSwapInterval(1); // Synchronize to monitor refresh rate
 
 	if (glewInit() != GLEW_OK)
 		std::cout << glewGetErrorString(glewInit());
@@ -63,12 +62,12 @@ int main(void)
 		ImGui_ImplOpenGL3_Init(glsl_version);
 		ImGui::StyleColorsDark();
 
-		test::Test* currentTest = nullptr;
-		test::TestMenu* testMenu = new test::TestMenu(currentTest);
-		currentTest = testMenu;
+		test::Test* current_test = nullptr;
+		auto test_menu = new test::TestMenu(current_test);
+		current_test = test_menu;
 		
-		testMenu->registerTest<test::TestClearColor>("Clear Color");
-		testMenu->registerTest<test::TestTexture2D>("2D Texture");
+		test_menu->register_test<test::TestClearColor>("Clear Color");
+		test_menu->register_test<test::TestTexture2D>("2D Texture");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
@@ -81,17 +80,17 @@ int main(void)
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
-			if (currentTest)
+			if (current_test)
 			{
-				currentTest->onUpdate(0.0f);
-				currentTest->onRender();
+				current_test->on_update(0.0f);
+				current_test->on_render();
 				ImGui::Begin("Test");
-				if (currentTest != testMenu && ImGui::Button("<-"))
+				if (current_test != test_menu && ImGui::Button("<-"))
 				{
-					delete currentTest;
-					currentTest = testMenu;
+					delete current_test;
+					current_test = test_menu;
 				}
-				currentTest->onImGuiRender();
+				current_test->on_imgui_render();
 				ImGui::End();
 			}
 			
@@ -105,9 +104,9 @@ int main(void)
 			/* Poll for and process events */
 			glfwPollEvents();
 		}
-		delete currentTest;
-		if (currentTest != testMenu)
-			delete testMenu;
+		delete current_test;
+		if (current_test != test_menu)
+			delete test_menu;
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();

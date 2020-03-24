@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace test {
 	
@@ -12,27 +13,27 @@ namespace test {
 		Test() {};
 		virtual ~Test() {};
 
-		virtual void onUpdate(float deltaTime) {}
-		virtual void onRender() {}
-		virtual void onImGuiRender() {}
+		virtual void on_update(float delta_time) {}
+		virtual void on_render() {}
+		virtual void on_imgui_render() {}
 
 	};
-
+	
 	class TestMenu : public Test
 	{
 	public:
-		TestMenu(Test*& currentTestPointer);
+		TestMenu(Test*& current_test_pointer);
 	
-		void onImGuiRender() override;
+		void on_imgui_render() override;
 
 		template<typename T>
-		void registerTest(const std::string& name)
+		void register_test(const std::string& name)
 		{
 			std::cout << "Registering test " << name << std::endl;
-			m_Tests.push_back(std::make_pair(name, []() { return new T(); }));
+			m_tests_.push_back(std::make_pair(name, []() { return new T(); }));
 		}
 	private:
-		Test*& m_CurrentTest;
-		std::vector< std::pair<std::string, std::function<Test*()> >> m_Tests;
+		Test*& m_current_test_;
+		std::vector< std::pair<std::string, std::function<Test*()> >> m_tests_;
 	};
 }

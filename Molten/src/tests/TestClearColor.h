@@ -8,13 +8,12 @@ namespace test {
 	{
 	public:
 		TestClearColor();
-		~TestClearColor();
+		~TestClearColor() = default;
 
-		
-		void onUpdate(float deltaTime) override;
-		void onRender() override;
-		void onImGuiRender() override;
+		void on_update(float delta_time) override;
+		void on_render() override;
+		void on_imgui_render() override;
 	private:
-		float m_ClearColor[4];
+		float m_clear_color_[4];
 	};
 }

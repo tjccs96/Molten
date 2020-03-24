@@ -13,22 +13,21 @@ namespace test {
 	{
 	public:
 		TestTexture2D();
-		~TestTexture2D();
+		~TestTexture2D() = default;
 
-		
-		void onUpdate(float deltaTime) override;
-		void onRender() override;
-		void onImGuiRender() override;
+		void on_update(float delta_time) override;
+		void on_render() override;
+		void on_imgui_render() override;
 	private:
-		std::unique_ptr<VertexArray> m_VAO;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<Texture> m_Texture;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<VertexArray> m_vao_;
+		std::unique_ptr<IndexBuffer> m_index_buffer_;
+		std::unique_ptr<Shader> m_shader_;
+		std::unique_ptr<Texture> m_texture_;
+		std::unique_ptr<VertexBuffer> m_vertex_buffer_;
 
-		glm::mat4 m_Proj;
-		glm::mat4 m_View;
-		glm::vec3 m_TranslationA;
-		glm::vec3 m_TranslationB;
+		glm::mat4 m_proj_;
+		glm::mat4 m_view_;
+		glm::vec3 m_translation_a_;
+		glm::vec3 m_translation_b_;
 	};
 }

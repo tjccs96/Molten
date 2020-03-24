@@ -11,7 +11,7 @@ struct VertexBufferElement
 	unsigned int count;
 	unsigned char normalized;
 
-	static unsigned int getSizeOfType(unsigned int type)
+	static unsigned int get_size_of_type(const unsigned int type)
 	{
 		switch (type)
 		{
@@ -31,11 +31,11 @@ struct VertexBufferElement
 class VertexBufferLayout
 {
 private:
-	std::vector<VertexBufferElement> m_Elements;
-	unsigned int m_Stride;
+	std::vector<VertexBufferElement> m_elements_;
+	unsigned int m_stride_;
 public:
 	VertexBufferLayout()
-		: m_Stride(0) {}
+		: m_stride_{0} {}
 
 	template<typename T>
 	void push(unsigned int count)
@@ -44,26 +44,26 @@ public:
 	}
 
 	template<>
-	void push<float>(unsigned int count)
+	void push<float>(const unsigned int count)
 	{
-		m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
-		m_Stride += count * VertexBufferElement::getSizeOfType(GL_FLOAT);
+		m_elements_.push_back({ GL_FLOAT, count, GL_FALSE });
+		m_stride_ += count * VertexBufferElement::get_size_of_type(GL_FLOAT);
 	}
 
 	template<>
-	void push<unsigned int>(unsigned int count)
+	void push<unsigned int>(const unsigned int count)
 	{
-		m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-		m_Stride += count * VertexBufferElement::getSizeOfType(GL_UNSIGNED_INT);
+		m_elements_.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
+		m_stride_ += count * VertexBufferElement::get_size_of_type(GL_UNSIGNED_INT);
 	}
 
 	template<>
-	void push<unsigned char>(unsigned int count)
+	void push<unsigned char>(const unsigned int count)
 	{
-		m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-		m_Stride += count * VertexBufferElement::getSizeOfType(GL_UNSIGNED_BYTE);
+		m_elements_.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
+		m_stride_ += count * VertexBufferElement::get_size_of_type(GL_UNSIGNED_BYTE);
 	}
 
-	inline const std::vector<VertexBufferElement>& getElements() const { return m_Elements; }
-	inline unsigned int getStride() const { return m_Stride; }
+	inline const std::vector<VertexBufferElement>& get_elements() const { return m_elements_; }
+	inline unsigned int get_stride() const { return m_stride_; }
 };
